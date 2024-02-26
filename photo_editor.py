@@ -7,7 +7,7 @@ import cv2
 class PhotoEditor:
     def __init__(self, window: Tk) -> None:
         self.window = window
-        self.window.title("Photo Editor")
+        self.window.title("Shimp")
         self.image_states = []  # Initialize the stack for image states
         self.original_image = None
         self.display_image = None
