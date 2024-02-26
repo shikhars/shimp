@@ -20,6 +20,8 @@ dist/
 .venv
 env/
 venv/
+shimp/
+
 
 # IDE settings
 .idea/
