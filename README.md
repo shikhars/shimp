@@ -29,6 +29,10 @@ Shimp is a free and open source simple image manipulation tool.
 
 Note: If you are using Shimp before threading is implemented please use images of smaller sizes (less than 1 MB) for optimal performance. This limitation will be fixed in the next release.
 
+## Screenshot
+
+![](https://github.com/shikhars/shimp/blob/nondefault/images/shimp.png)
+
 ```shell
 pip install Pillow
 pip install opencv-python
