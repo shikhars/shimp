@@ -392,19 +392,6 @@ class PhotoEditor:
             self.update_image_display()
 
 
-    def apply_artistic_effect(self, event=None):
-        selected_effect = self.effects_combobox.get()
-        
-        if selected_effect == 'Apply Painting Effect':
-            self.apply_painting_effect()
-        elif selected_effect == 'Apply Sketch Effect':
-            self.apply_sketch_effect()
-        elif selected_effect == 'None':
-            # Optionally, revert to the original or currently displayed image
-            self.display_image = self.original_image.copy()
-            self.update_image_display()
-
-
     def reset_adjustments(self):
         # Reset sliders to their default values
         self.brightness_slider.set(0)
