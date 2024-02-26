@@ -31,6 +31,7 @@ Note: If you are using Shimp before threading is implemented please use images o
 
 ## Screenshot
 
+![](https://github.com/shikhars/shimp/blob/nondefault/images/shimp.png)
 
 ```shell
 pip install Pillow
