@@ -1,9 +1,14 @@
-# shimp
-Shimp is a simple image manipulation tool
+# Shimp
 
 ## About
 
-Shimp is a free and open source simple image editing tool built with tkinter, Pillow, and OpenCV.
+Shimp is a free and open source simple image manipulation tool.
+
+## Built with
+
+* tkinter
+* Pillow
+* OpenCV
 
 ## Current Features
 
@@ -24,3 +29,8 @@ Shimp is a free and open source simple image editing tool built with tkinter, Pi
 
 Note: If you are using Shimp before threading is implemented please use images of smaller sizes (less than 1 MB) for optimal performance. This limitation will be fixed in the next release.
 
+```shell
+pip install Pillow
+pip install opencv-python
+```
+Shimp is distributed under the MIT Licence. Please read the attached licence document.
