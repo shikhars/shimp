@@ -194,6 +194,12 @@ class PhotoEditor:
         
         # Save the current state before cropping
         self.image_states.append(self.display_image.copy())
+
+        self.original_image = self.display_image.copy()
+
+        self.apply_crop()
+
+    def apply_crop(self):
         
         # Calculate the scaling factor
         canvas_width = self.canvas.winfo_width()
@@ -243,6 +249,7 @@ class PhotoEditor:
         """Rotates the current image by 90 degrees."""
         if self.display_image:
             self.display_image = self.display_image.rotate(-90, expand=True)
+            self.original_image = self.display_image.copy()
             self.update_image_display()
         else:
             print("No image to load")
@@ -251,6 +258,7 @@ class PhotoEditor:
         """Flips the current image horizontally."""
         if self.display_image:
             self.display_image = self.display_image.transpose(Image.FLIP_LEFT_RIGHT)
+            self.original_image = self.display_image.copy()
             self.update_image_display()
         else:
             print("No image to load")
@@ -259,6 +267,7 @@ class PhotoEditor:
         """Flips the current image vertically."""
         if self.display_image:
             self.display_image = self.display_image.transpose(Image.FLIP_TOP_BOTTOM)
+            self.original_image = self.display_image.copy()
             self.update_image_display()
         else:
             print("No image to load")
@@ -295,6 +304,7 @@ class PhotoEditor:
         # Resize the image and update the display, ensuring new dimensions are greater than zero.
         if new_width > 0 and new_height > 0:
             self.display_image = self.display_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+            self.original_image = self.display_image.copy()
             self.update_image_display()
         else:
             print("Invalid dimensions for resizing.")
@@ -339,6 +349,7 @@ class PhotoEditor:
 
             # Convert back to PIL Image and update the display
             self.display_image = Image.fromarray(cv2.cvtColor(adjusted, cv2.COLOR_BGR2RGB))
+            self.original_image = self.display_image.copy()
             self.update_image_display()
 
     def update_saturation_hue(self, event=None):
@@ -365,6 +376,7 @@ class PhotoEditor:
 
             # Convert back to PIL Image and update the display
             self.display_image = Image.fromarray(rgb_adjusted)
+            self.original_image = self.display_image.copy()
             self.update_image_display()
 
     def apply_painting_effect(self):
@@ -377,6 +389,7 @@ class PhotoEditor:
 
             # Convert back to PIL Image and update the display
             self.display_image = Image.fromarray(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
+            self.original_image = self.display_image.copy()
             self.update_image_display()
 
     def apply_sketch_effect(self):
@@ -389,6 +402,7 @@ class PhotoEditor:
 
             # Convert back to PIL Image and update the display
             self.display_image = Image.fromarray(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
+            self.original_image = self.display_image.copy()
             self.update_image_display()
 
 
