@@ -94,22 +94,22 @@ class PhotoEditor:
         self.flip_btn.grid(row=9, column=0, sticky="nsew", padx=5)
 
         # Brightness slider
-        self.brightness_slider = Scale(self.ui_frame, from_=-100, to=100, orient=HORIZONTAL, label="Brightness", command=self.update_brightness_contrast)
+        self.brightness_slider = Scale(self.ui_frame, from_=-100, to=100, orient=HORIZONTAL, label="Brightness", command=self.update_brightness)
         self.brightness_slider.set(0)  # Default value
         self.brightness_slider.grid(row=10, column=0, sticky="nsew")
 
         # Contrast slider
-        self.contrast_slider = Scale(self.ui_frame, from_=1, to=3, resolution=0.01, orient=HORIZONTAL, label="Contrast", command=self.update_brightness_contrast)
+        self.contrast_slider = Scale(self.ui_frame, from_=1, to=3, resolution=0.01, orient=HORIZONTAL, label="Contrast", command=self.update_contrast)
         self.contrast_slider.set(1)  # Default value
         self.contrast_slider.grid(row=11, column=0, sticky="nsew")
 
         # Saturation slider
-        self.saturation_slider = Scale(self.ui_frame, from_=0, to=2, resolution=0.01, orient=HORIZONTAL, label="Saturation", command=self.update_saturation_hue)
+        self.saturation_slider = Scale(self.ui_frame, from_=0, to=2, resolution=0.01, orient=HORIZONTAL, label="Saturation", command=self.update_saturation)
         self.saturation_slider.set(1)  # Default value (no change)
         self.saturation_slider.grid(row=12, column=0, sticky="nsew")
 
         # Hue slider
-        self.hue_slider = Scale(self.ui_frame, from_=-180, to=180, orient=HORIZONTAL, label="Hue", command=self.update_saturation_hue)
+        self.hue_slider = Scale(self.ui_frame, from_=-180, to=180, orient=HORIZONTAL, label="Hue", command=self.update_hue)
         self.hue_slider.set(0)  # Default value (no change)
         self.hue_slider.grid(row=13, column=0, sticky="nsew")
 
@@ -335,24 +335,39 @@ class PhotoEditor:
             event.widget.insert(0, placeholder)
             event.widget.config(fg='grey')
 
-    def update_brightness_contrast(self, event=None):
+    def update_brightness(self, event=None):
         if self.display_image:
             # Convert PIL Image to OpenCV format
             cv_image = cv2.cvtColor(np.array(self.display_image), cv2.COLOR_RGB2BGR)
             
             # Get current values of the sliders
             brightness = self.brightness_slider.get()
-            contrast = self.contrast_slider.get()
 
-            # Apply brightness and contrast (alpha is contrast, beta is brightness)
-            adjusted = cv2.convertScaleAbs(cv_image, alpha=contrast, beta=brightness)
+            # Apply brightness
+            adjusted = cv2.convertScaleAbs(cv_image, alpha=1, beta=brightness)
 
             # Convert back to PIL Image and update the display
             self.display_image = Image.fromarray(cv2.cvtColor(adjusted, cv2.COLOR_BGR2RGB))
-            self.original_image = self.display_image.copy()
             self.update_image_display()
 
-    def update_saturation_hue(self, event=None):
+
+    def update_contrast(self, event=None):
+        if self.display_image:
+            # Convert PIL Image to OpenCV format
+            cv_image = cv2.cvtColor(np.array(self.display_image), cv2.COLOR_RGB2BGR)
+            
+            # Get current values of the slider
+            contrast = self.contrast_slider.get()
+
+            # Apply contrast
+            adjusted = cv2.convertScaleAbs(cv_image, alpha=contrast, beta=0)
+
+            # Convert back to PIL Image and update the display
+            self.display_image = Image.fromarray(cv2.cvtColor(adjusted, cv2.COLOR_BGR2RGB))
+            self.update_image_display()
+
+    
+    def update_hue(self, event=None):
         if self.display_image:
             # Convert PIL Image to OpenCV format in BGR color space
             cv_image = cv2.cvtColor(np.array(self.display_image), cv2.COLOR_RGB2BGR)
@@ -360,12 +375,31 @@ class PhotoEditor:
             # Convert BGR to HSV
             hsv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
 
-            # Adjust Hue and Saturation
+            # Adjust Hue
             hue_shift = self.hue_slider.get()
-            saturation_scale = self.saturation_slider.get()
 
             # Adding the hue shift, ensuring values wrap correctly around 180
             hsv_image[:, :, 0] = (hsv_image[:, :, 0].astype(int) + hue_shift) % 180
+
+            # Convert back to BGR and then to RGB
+            bgr_adjusted = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+            rgb_adjusted = cv2.cvtColor(bgr_adjusted, cv2.COLOR_BGR2RGB)
+
+            # Convert back to PIL Image and update the display
+            self.display_image = Image.fromarray(rgb_adjusted)
+            self.update_image_display()
+
+
+    def update_saturation(self, event=None):
+        if self.display_image:
+            # Convert PIL Image to OpenCV format in BGR color space
+            cv_image = cv2.cvtColor(np.array(self.display_image), cv2.COLOR_RGB2BGR)
+
+            # Convert BGR to HSV
+            hsv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
+
+            # Adjust saturation
+            saturation_scale = self.saturation_slider.get()
 
             # Scaling the saturation, ensuring values stay within the 0-255 range
             hsv_image[:, :, 1] = np.clip(hsv_image[:, :, 1].astype(float) * saturation_scale, 0, 255).astype(np.uint8)
@@ -376,8 +410,8 @@ class PhotoEditor:
 
             # Convert back to PIL Image and update the display
             self.display_image = Image.fromarray(rgb_adjusted)
-            self.original_image = self.display_image.copy()
             self.update_image_display()
+
 
     def apply_painting_effect(self):
         if self.display_image:
@@ -427,14 +461,9 @@ class PhotoEditor:
         self.end_x = None
         self.end_y = None
 
-        # Reset any additional UI elements or states in future as required
-        # For example, if we have UI elements or variables tracking the rotation/flipping state, reset them here
-        # Example:
-        # self.rotation_angle = 0
-        # self.is_flipped_horizontally = False
-        # self.is_flipped_vertically = False
-        
-        # Update the canvas or image display if any additional reset actions were taken
+        # Reset aspect ratio toggle
+        self.maintain_aspect_ratio.set(False)
+        self.height_entry.config(state='normal')
 
 
     def save_image_to_file(self, image):
